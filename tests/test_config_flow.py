@@ -8,6 +8,7 @@ import pytest
 import custom_components.transit_departures.config_flow as config_flow
 from custom_components.transit_departures.api import StopSearchResult, TransitApiError
 from custom_components.transit_departures.config_flow import (
+    CONF_NUMBER_OF_DEPARTURES,
     CONF_STOP_ID,
     CONF_STOP_LOOKUP_QUERY,
     TransitStopSubentryFlowHandler,
@@ -179,3 +180,84 @@ async def test_create_stop_subentry_stores_disable_stop_suffix(monkeypatch: pyte
     )
 
     assert result["data"] == {"stop_id": "HSL:1040273", "disable_stop_suffix": True}
+
+
+@pytest.mark.asyncio
+async def test_subentry_reconfigure_updates_departure_count(monkeypatch: pytest.MonkeyPatch) -> None:
+    handler = TransitStopSubentryFlowHandler()
+    monkeypatch.setattr(
+        handler, "_get_entry", lambda: SimpleNamespace(data={CONF_NUMBER_OF_DEPARTURES: 4})
+    )
+    monkeypatch.setattr(
+        handler, "_get_reconfigure_subentry", lambda: SimpleNamespace(data={CONF_STOP_ID: "HSL:1"})
+    )
+    captured: dict = {}
+
+    def fake_update_and_abort(entry, subentry, *, data_updates):
+        captured.update(data_updates)
+        return {"type": "abort", "reason": "reconfigure_successful"}
+
+    monkeypatch.setattr(handler, "async_update_and_abort", fake_update_and_abort)
+
+    result = await handler.async_step_reconfigure({CONF_NUMBER_OF_DEPARTURES: 6.0})
+
+    assert result["reason"] == "reconfigure_successful"
+    assert captured == {CONF_NUMBER_OF_DEPARTURES: 6}
+    assert isinstance(captured[CONF_NUMBER_OF_DEPARTURES], int)
+
+
+@pytest.mark.asyncio
+async def test_subentry_reconfigure_defaults_to_shared_count(monkeypatch: pytest.MonkeyPatch) -> None:
+    handler = TransitStopSubentryFlowHandler()
+    monkeypatch.setattr(
+        handler, "_get_entry", lambda: SimpleNamespace(data={CONF_NUMBER_OF_DEPARTURES: 5})
+    )
+    monkeypatch.setattr(handler, "_get_reconfigure_subentry", lambda: SimpleNamespace(data={}))
+    captured: dict = {}
+
+    def fake_show_form(*, step_id, data_schema, errors=None):
+        captured["schema"] = data_schema
+        return {"type": "form", "step_id": step_id}
+
+    monkeypatch.setattr(handler, "async_show_form", fake_show_form)
+
+    result = await handler.async_step_reconfigure(None)
+
+    assert result["type"] == "form"
+    schema_key = next(iter(captured["schema"].schema))
+    assert schema_key.default() == 5
+
+
+@pytest.mark.asyncio
+async def test_main_flow_reconfigure_updates_shared_numbers(monkeypatch: pytest.MonkeyPatch) -> None:
+    flow = config_flow.TransitDeparturesConfigFlow()
+    entry = SimpleNamespace(
+        data={
+            CONF_NUMBER_OF_DEPARTURES: 4,
+            config_flow.CONF_CUTOFF_MINUTES: 0,
+            config_flow.CONF_UPDATE_INTERVAL_MINUTES: 15,
+        }
+    )
+    monkeypatch.setattr(flow, "_get_reconfigure_entry", lambda: entry)
+    captured: dict = {}
+
+    def fake_update_reload_and_abort(entry_, *, data_updates):
+        captured.update(data_updates)
+        return {"type": "abort", "reason": "reconfigure_successful"}
+
+    monkeypatch.setattr(flow, "async_update_reload_and_abort", fake_update_reload_and_abort)
+
+    result = await flow.async_step_reconfigure(
+        {
+            CONF_NUMBER_OF_DEPARTURES: 6,
+            config_flow.CONF_CUTOFF_MINUTES: 5,
+            config_flow.CONF_UPDATE_INTERVAL_MINUTES: 10,
+        }
+    )
+
+    assert result["reason"] == "reconfigure_successful"
+    assert captured == {
+        CONF_NUMBER_OF_DEPARTURES: 6,
+        config_flow.CONF_CUTOFF_MINUTES: 5,
+        config_flow.CONF_UPDATE_INTERVAL_MINUTES: 10,
+    }

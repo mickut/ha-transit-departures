@@ -11,6 +11,15 @@
           "prefix": "Globalt namnsprefix",
           "suffix": "Globalt namnsuffix"
         }
+      },
+      "reconfigure": {
+        "title": "Konfigurera om delade inställningar",
+        "description": "Justera de delade avgångsinställningarna. Hållplatser utan eget antal avgångar följer det delade värdet.",
+        "data": {
+          "number_of_departures": "Antal avgångar",
+          "cutoff_minutes": "Gräns i minuter",
+          "update_interval_minutes": "API-uppdateringsintervall i minuter"
+        }
       }
     },
     "error": {
@@ -38,6 +47,13 @@
             "stop_id": "Matchande hållplats",
             "stop_suffix": "Anpassat hållplatssuffix",
             "disable_stop_suffix": "Inaktivera hållplatssuffix i sensorns namn"
+          }
+        },
+        "reconfigure": {
+          "title": "Konfigurera om hållplats",
+          "description": "Justera inställningarna för denna hållplats. Antalet avgångar ärvs som standard från integrationens delade inställning.",
+          "data": {
+            "number_of_departures": "Antal avgångar"
           }
         }
       },

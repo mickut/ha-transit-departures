@@ -134,8 +134,8 @@ def test_normalize_stops_adds_missing_configured_stop() -> None:
                 "stoptimesForPatterns": [],
             }
         ],
-        configured_stop_ids=["HSL:1040273", "HSL:1041402"],
-        number_of_departures=4,
+        stop_counts={"HSL:1040273": 4, "HSL:1041402": 4},
+        default_count=4,
         cutoff_minutes=0,
     )
 
@@ -201,3 +201,49 @@ async def test_async_update_data_raises_update_failed_when_no_cache() -> None:
 
     with pytest.raises(UpdateFailed):
         await coordinator._async_update_data()
+
+
+@pytest.mark.asyncio
+async def test_async_update_data_applies_per_stop_departure_counts() -> None:
+    coordinator = _coordinator_instance()
+    entry = _build_entry()
+    entry.subentries["sub-2"] = SimpleNamespace(
+        subentry_type=SUBENTRY_TYPE_STOP,
+        data={CONF_STOP_ID: "HSL:2", CONF_NUMBER_OF_DEPARTURES: 1},
+    )
+    coordinator.entry = entry
+    coordinator.api = AsyncMock()
+    coordinator._cached_stops = None
+    coordinator._last_api_refresh = None
+
+    now = datetime.now(UTC)
+    service_day = int(datetime(now.year, now.month, now.day, tzinfo=UTC).timestamp())
+
+    def _stop_payload(gtfs_id: str) -> dict:
+        return {
+            "gtfsId": gtfs_id,
+            "name": gtfs_id,
+            "alerts": [],
+            "stoptimesForPatterns": [
+                {
+                    "pattern": {"code": "p1", "headsign": "X", "route": {}},
+                    "stoptimes": [
+                        {"serviceDay": service_day, "scheduledDeparture": 47 * 3600},
+                        {"serviceDay": service_day, "scheduledDeparture": 47 * 3600 + 60},
+                        {"serviceDay": service_day, "scheduledDeparture": 47 * 3600 + 120},
+                    ],
+                }
+            ],
+        }
+
+    coordinator.api.async_get_departures.return_value = [
+        _stop_payload("HSL:1040273"),
+        _stop_payload("HSL:2"),
+    ]
+
+    result = await coordinator._async_update_data()
+
+    # The API fetch uses the largest configured count; trimming is per stop
+    coordinator.api.async_get_departures.assert_awaited_once_with(["HSL:1040273", "HSL:2"], 4)
+    assert len(result["HSL:1040273"].departures) == 3
+    assert len(result["HSL:2"].departures) == 1

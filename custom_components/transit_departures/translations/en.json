@@ -11,6 +11,15 @@
           "prefix": "Global name prefix",
           "suffix": "Global name suffix"
         }
+      },
+      "reconfigure": {
+        "title": "Reconfigure shared settings",
+        "description": "Adjust the shared departure settings. Stops without their own departure count follow the shared value.",
+        "data": {
+          "number_of_departures": "Number of departures",
+          "cutoff_minutes": "Cutoff minutes",
+          "update_interval_minutes": "API update interval in minutes"
+        }
       }
     },
     "error": {
@@ -38,6 +47,13 @@
             "stop_id": "Matching stop",
             "stop_suffix": "Custom stop suffix",
             "disable_stop_suffix": "Disable stop suffix in sensor name"
+          }
+        },
+        "reconfigure": {
+          "title": "Reconfigure stop",
+          "description": "Adjust settings for this stop. The number of departures defaults to the shared setting of the integration.",
+          "data": {
+            "number_of_departures": "Number of departures"
           }
         }
       },

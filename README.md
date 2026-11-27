@@ -49,9 +49,12 @@ Home Assistant custom integration for upcoming departures from the FinTraffic Gr
 
 ## Configuration
 
-The main config flow asks for:
+The main config flow asks for (all numeric settings can be changed later
+with **Reconfigure** on the integration entry):
 
-- `number_of_departures`: how many departures to retain after sorting and filtering
+- `number_of_departures`: how many departures to retain after sorting and filtering.
+  Each stop can override this: open the integration page, then use **Reconfigure**
+  on the stop's row. Unset stops follow the shared value.
 - `cutoff_minutes`: exclude departures that are in the past or within this many minutes from now
 - `update_interval_minutes`: API polling interval for refreshing departures, default `15`
 
