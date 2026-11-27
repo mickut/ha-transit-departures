@@ -30,7 +30,11 @@
   },
   "config_subentries": {
     "stop": {
-      "title": "Hållplats",
+      "entry_type": "Hållplats",
+      "initiate_flow": {
+        "user": "Lägg till hållplats",
+        "reconfigure": "Konfigurera om hållplats"
+      },
       "step": {
         "user": {
           "title": "Lägg till hållplats",

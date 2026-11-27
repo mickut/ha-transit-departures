@@ -30,7 +30,11 @@
   },
   "config_subentries": {
     "stop": {
-      "title": "Pysäkki",
+      "entry_type": "Pysäkki",
+      "initiate_flow": {
+        "user": "Lisää pysäkki",
+        "reconfigure": "Muokkaa pysäkkiä"
+      },
       "step": {
         "user": {
           "title": "Lisää pysäkki",
