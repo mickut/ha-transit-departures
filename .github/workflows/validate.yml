@@ -42,6 +42,7 @@ jobs:
               run: |
                   python - <<'PY'
                   import json
+                  import tomllib
                   from pathlib import Path
 
                   root = Path('.')
@@ -59,6 +60,11 @@ jobs:
                   assert manifest['domain'] == 'transit_departures'
                   assert manifest['config_flow'] is True
                   assert isinstance(manifest['version'], str) and manifest['version']
+                  with (root / 'pyproject.toml').open('rb') as project_file:
+                      project_version = tomllib.load(project_file)['project']['version']
+                  assert project_version == manifest['version'], (
+                      f"project version {project_version!r} does not match manifest version {manifest['version']!r}"
+                  )
                   print('Metadata validation passed.')
                   PY
 
