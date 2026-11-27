@@ -35,7 +35,10 @@ Home Assistant custom integration for upcoming departures from the FinTraffic Gr
 4. Add `https://github.com/mickut/ha-transit-departures` as a repository with category `Integration`.
 5. Find Transit Departures Finland in HACS and install it.
 6. Restart Home Assistant.
-7. Go to Settings > Devices & services > Add integration and search for Transit Departures Finland.
+7. Go to Settings > Devices & services > Add integration and search for Transit Departures Finland,
+   or use the badge below:
+
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=transit_departures)
 
 ### Manual installation
 
