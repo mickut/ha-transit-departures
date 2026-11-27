@@ -30,7 +30,11 @@
   },
   "config_subentries": {
     "stop": {
-      "title": "Stop",
+      "entry_type": "Stop",
+      "initiate_flow": {
+        "user": "Add stop",
+        "reconfigure": "Reconfigure stop"
+      },
       "step": {
         "user": {
           "title": "Add stop",
