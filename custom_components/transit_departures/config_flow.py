@@ -147,6 +147,46 @@ class TransitDeparturesConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
 
+    async def async_step_reconfigure(
+        self, user_input: Mapping[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Reconfigure the shared numeric settings of the integration."""
+        entry = self._get_reconfigure_entry()
+
+        if user_input is not None:
+            return self.async_update_reload_and_abort(
+                entry,
+                data_updates={
+                    CONF_NUMBER_OF_DEPARTURES: int(user_input[CONF_NUMBER_OF_DEPARTURES]),
+                    CONF_CUTOFF_MINUTES: int(user_input[CONF_CUTOFF_MINUTES]),
+                    CONF_UPDATE_INTERVAL_MINUTES: int(
+                        user_input[CONF_UPDATE_INTERVAL_MINUTES]
+                    ),
+                },
+            )
+
+        schema = vol.Schema(
+            {
+                vol.Required(
+                    CONF_NUMBER_OF_DEPARTURES,
+                    default=entry.data.get(
+                        CONF_NUMBER_OF_DEPARTURES, DEFAULT_NUMBER_OF_DEPARTURES
+                    ),
+                ): vol.All(vol.Coerce(int), vol.Range(min=1, max=20)),
+                vol.Required(
+                    CONF_CUTOFF_MINUTES,
+                    default=entry.data.get(CONF_CUTOFF_MINUTES, DEFAULT_CUTOFF_MINUTES),
+                ): vol.All(vol.Coerce(int), vol.Range(min=0, max=180)),
+                vol.Required(
+                    CONF_UPDATE_INTERVAL_MINUTES,
+                    default=entry.data.get(
+                        CONF_UPDATE_INTERVAL_MINUTES, DEFAULT_UPDATE_INTERVAL_MINUTES
+                    ),
+                ): vol.All(vol.Coerce(int), vol.Range(min=1, max=1440)),
+            }
+        )
+        return self.async_show_form(step_id="reconfigure", data_schema=schema)
+
     async def async_on_create_entry(self, result: ConfigFlowResult) -> ConfigFlowResult:
         """Start the first stop subentry flow after creating the main entry."""
         subentry_result = await self.hass.config_entries.subentries.async_init(
@@ -258,6 +298,42 @@ class TransitStopSubentryFlowHandler(ConfigSubentryFlow):
         )
 
         return self.async_show_form(step_id="select_stop", data_schema=schema, errors=errors)
+
+    async def async_step_reconfigure(
+        self, user_input: Mapping[str, Any] | None = None
+    ) -> SubentryFlowResult:
+        """Reconfigure per-stop settings, like the departure count."""
+        entry = self._get_entry()
+        subentry = self._get_reconfigure_subentry()
+
+        if user_input is not None:
+            return self.async_update_and_abort(
+                entry,
+                subentry,
+                data_updates={
+                    CONF_NUMBER_OF_DEPARTURES: int(user_input[CONF_NUMBER_OF_DEPARTURES]),
+                },
+            )
+
+        default_count = subentry.data.get(
+            CONF_NUMBER_OF_DEPARTURES,
+            entry.data.get(CONF_NUMBER_OF_DEPARTURES, DEFAULT_NUMBER_OF_DEPARTURES),
+        )
+        schema = vol.Schema(
+            {
+                vol.Required(
+                    CONF_NUMBER_OF_DEPARTURES, default=default_count
+                ): selector.NumberSelector(
+                    selector.NumberSelectorConfig(
+                        min=1,
+                        max=20,
+                        step=1,
+                        mode=selector.NumberSelectorMode.BOX,
+                    )
+                ),
+            }
+        )
+        return self.async_show_form(step_id="reconfigure", data_schema=schema)
 
     async def _async_create_stop_subentry(
         self,

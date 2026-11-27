@@ -59,12 +59,19 @@ class TransitDeparturesCoordinator(DataUpdateCoordinator[dict[str, StopData]]):
 
     async def _async_update_data(self) -> dict[str, StopData]:
         now = datetime.now(UTC)
-        stop_ids = [
-            subentry.data[CONF_STOP_ID]
-            for subentry in self.entry.subentries.values()
-            if subentry.subentry_type == SUBENTRY_TYPE_STOP and subentry.data.get(CONF_STOP_ID)
-        ]
-        number_of_departures: int = self.entry.data[CONF_NUMBER_OF_DEPARTURES]
+        shared_count: int = self.entry.data[CONF_NUMBER_OF_DEPARTURES]
+        # Per-stop departure counts: a stop subentry may override the shared value
+        stop_counts: dict[str, int] = {}
+        for subentry in self.entry.subentries.values():
+            if subentry.subentry_type != SUBENTRY_TYPE_STOP:
+                continue
+            sub_stop_id = subentry.data.get(CONF_STOP_ID)
+            if not sub_stop_id:
+                continue
+            stop_counts[sub_stop_id] = int(
+                subentry.data.get(CONF_NUMBER_OF_DEPARTURES, shared_count)
+            )
+        stop_ids = list(stop_counts)
         cutoff_minutes: int = self.entry.data[CONF_CUTOFF_MINUTES]
         api_update_interval_minutes: int = self.entry.data.get(
             CONF_UPDATE_INTERVAL_MINUTES,
@@ -85,7 +92,7 @@ class TransitDeparturesCoordinator(DataUpdateCoordinator[dict[str, StopData]]):
             try:
                 self._cached_stops = await self.api.async_get_departures(
                     stop_ids,
-                    number_of_departures,
+                    max(stop_counts.values()),
                 )
                 self._last_api_refresh = now
             except TransitApiError as err:
@@ -95,16 +102,16 @@ class TransitDeparturesCoordinator(DataUpdateCoordinator[dict[str, StopData]]):
 
         return self._normalize_stops(
             self._cached_stops or [],
-            stop_ids,
-            number_of_departures,
+            stop_counts,
+            shared_count,
             cutoff_minutes,
         )
 
     def _normalize_stops(
         self,
         stops: list[dict[str, Any] | None],
-        configured_stop_ids: list[str],
-        number_of_departures: int,
+        stop_counts: dict[str, int],
+        default_count: int,
         cutoff_minutes: int,
     ) -> dict[str, StopData]:
         minimum_departure = datetime.now(HELSINKI_TIMEZONE) + timedelta(minutes=cutoff_minutes)
@@ -126,7 +133,7 @@ class TransitDeparturesCoordinator(DataUpdateCoordinator[dict[str, StopData]]):
                 stop_name=stop_name,
                 stoptimes_for_patterns=stop.get("stoptimesForPatterns") or (),
                 minimum_departure=minimum_departure,
-                number_of_departures=number_of_departures,
+                number_of_departures=stop_counts.get(stop_id, default_count),
             )
 
             normalized[stop_id] = StopData(
@@ -137,7 +144,7 @@ class TransitDeparturesCoordinator(DataUpdateCoordinator[dict[str, StopData]]):
                 alerts=alerts,
             )
 
-        for configured_stop_id in configured_stop_ids:
+        for configured_stop_id in stop_counts:
             normalized.setdefault(
                 configured_stop_id,
                 StopData(
