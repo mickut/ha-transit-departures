@@ -48,16 +48,16 @@ jobs:
                   root = Path('.')
                   files = [
                       root / 'hacs.json',
-                      root / 'custom_components' / 'transit_departures' / 'manifest.json',
-                      root / 'custom_components' / 'transit_departures' / 'strings.json',
+                      root / 'custom_components' / 'transit_departures_finland' / 'manifest.json',
+                      root / 'custom_components' / 'transit_departures_finland' / 'strings.json',
                   ]
 
                   for file_path in files:
                       with file_path.open('r', encoding='utf-8') as handle:
                           json.load(handle)
 
-                  manifest = json.loads((root / 'custom_components' / 'transit_departures' / 'manifest.json').read_text(encoding='utf-8'))
-                  assert manifest['domain'] == 'transit_departures'
+                  manifest = json.loads((root / 'custom_components' / 'transit_departures_finland' / 'manifest.json').read_text(encoding='utf-8'))
+                  assert manifest['domain'] == 'transit_departures_finland'
                   assert manifest['config_flow'] is True
                   assert isinstance(manifest['version'], str) and manifest['version']
                   with (root / 'pyproject.toml').open('rb') as project_file:

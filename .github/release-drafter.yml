@@ -7,8 +7,8 @@ template: |
 
   ## Installation
 
-  - Marketplace users can update from Settings > Updates, then restart Home Assistant.
-  - For a manual install, extract the attached archive and replace `custom_components/transit_departures` with the folder of the same name inside it.
+  - Marketplace users: review the [installation and upgrade instructions](https://github.com/mickut/ha-transit-departures#installation), then restart Home Assistant after updating.
+  - For a manual install, extract the attached archive and replace `custom_components/transit_departures_finland` with the folder of the same name inside it.
 
 categories:
   - title: Features

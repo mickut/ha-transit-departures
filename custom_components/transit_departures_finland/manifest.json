@@ -1,5 +1,5 @@
 {
-  "domain": "transit_departures",
+  "domain": "transit_departures_finland",
   "name": "Transit Departures Finland",
   "categories": [
     "vehicles_transport.public_transport"
@@ -13,7 +13,7 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/mickut/ha-transit-departures/issues",
   "loggers": [
-    "custom_components.transit_departures"
+    "custom_components.transit_departures_finland"
   ],
-  "version": "0.4.2"
+  "version": "0.4.3"
 }

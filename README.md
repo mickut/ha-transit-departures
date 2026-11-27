@@ -39,12 +39,27 @@ Requires Home Assistant 2026.11.0 or later.
 A first install normally loads without a restart. Follow any restart prompt shown by Home Assistant;
 updates to a loaded integration require a restart.
 
-[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=transit_departures)
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=transit_departures_finland)
+
+### Upgrading from 0.4.2 or earlier
+
+Version 0.4.3 changes the integration domain from `transit_departures` to
+`transit_departures_finland` to avoid a conflict with another integration.
+Settings and stop subentries are not migrated. Note your settings and stop IDs
+before removing the old integration; entity IDs may change and automations or
+dashboards may need updating.
+
+1. In **Settings > Devices & services**, remove the existing Transit Departures Finland integration.
+2. If installed through Marketplace, uninstall its repository there. If installed
+   manually, remove the old `custom_components/transit_departures` folder.
+   Do this before installing the other integration that uses that domain.
+3. Restart Home Assistant, install the new version using the instructions above,
+   and add the integration and its stops again.
 
 ### Manual installation
 
 1. Download a release or this repository.
-2. Copy the `custom_components/transit_departures` folder into your Home Assistant `config/custom_components` directory.
+2. Copy the `custom_components/transit_departures_finland` folder into your Home Assistant `config/custom_components` directory.
 3. Restart Home Assistant.
 4. Go to Settings > Devices & services > Add integration and search for Transit Departures Finland.
 
@@ -111,7 +126,7 @@ Recommended workspace settings for running tests from the project virtual enviro
  "python.testing.pytestEnabled": true,
  "python.testing.pytestArgs": [
   "tests",
-  "--cov=custom_components/transit_departures",
+  "--cov=custom_components/transit_departures_finland",
   "--cov-report=term-missing",
   "--cov-report=xml"
  ]
@@ -122,7 +137,7 @@ Notes:
 - If needed, you can run the same command in a terminal with:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest tests --cov=custom_components/transit_departures --cov-report=term-missing --cov-report=xml
+.\.venv\Scripts\python.exe -m pytest tests --cov=custom_components/transit_departures_finland --cov-report=term-missing --cov-report=xml
 ```
 
 ***

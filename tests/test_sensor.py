@@ -3,8 +3,8 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 
-from custom_components.transit_departures.sensor import TransitDepartureSensor
-from custom_components.transit_departures.models import AlertInfo, DepartureInfo, StopData
+from custom_components.transit_departures_finland.sensor import TransitDepartureSensor
+from custom_components.transit_departures_finland.models import AlertInfo, DepartureInfo, StopData
 
 
 class _DummyCoordinator:
