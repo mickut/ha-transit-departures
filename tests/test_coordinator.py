@@ -6,15 +6,15 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from custom_components.transit_departures.api import TransitApiError
-from custom_components.transit_departures.const import (
+from custom_components.transit_departures_finland.api import TransitApiError
+from custom_components.transit_departures_finland.const import (
     CONF_CUTOFF_MINUTES,
     CONF_NUMBER_OF_DEPARTURES,
     CONF_STOP_ID,
     CONF_UPDATE_INTERVAL_MINUTES,
     SUBENTRY_TYPE_STOP,
 )
-from custom_components.transit_departures.coordinator import (
+from custom_components.transit_departures_finland.coordinator import (
     HELSINKI_TIMEZONE,
     TransitDeparturesCoordinator,
 )

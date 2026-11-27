@@ -4,7 +4,7 @@ import json
 from datetime import timedelta
 from pathlib import Path
 
-DOMAIN = "transit_departures"
+DOMAIN = "transit_departures_finland"
 
 CONF_STOP_ID = "stop_id"
 CONF_STOP_LOOKUP_QUERY = "stop_lookup_query"

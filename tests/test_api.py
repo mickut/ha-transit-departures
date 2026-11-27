@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 from aiohttp import ClientError
 
-from custom_components.transit_departures.api import TransitApiClient, TransitApiError
+from custom_components.transit_departures_finland.api import TransitApiClient, TransitApiError
 from tests.fixtures.api_payloads import graphql_response
 
 

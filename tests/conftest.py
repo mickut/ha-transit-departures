@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from custom_components.transit_departures.api import TransitApiClient
+from custom_components.transit_departures_finland.api import TransitApiClient
 from tests.fixtures.api_payloads import graphql_stops_payload, search_results
 
 

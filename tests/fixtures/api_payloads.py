@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from custom_components.transit_departures.api import StopSearchResult
+from custom_components.transit_departures_finland.api import StopSearchResult
 
 
 def service_day_timestamp(year: int = 2026, month: int = 5, day: int = 22) -> int:

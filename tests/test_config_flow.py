@@ -5,9 +5,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-import custom_components.transit_departures.config_flow as config_flow
-from custom_components.transit_departures.api import StopSearchResult, TransitApiError
-from custom_components.transit_departures.config_flow import (
+from homeassistant import config_entries
+
+import custom_components.transit_departures_finland.config_flow as config_flow
+from custom_components.transit_departures_finland.api import StopSearchResult, TransitApiError
+from custom_components.transit_departures_finland.const import DOMAIN
+from custom_components.transit_departures_finland.config_flow import (
     CONF_NUMBER_OF_DEPARTURES,
     CONF_STOP_ID,
     CONF_STOP_LOOKUP_QUERY,
@@ -16,6 +19,11 @@ from custom_components.transit_departures.config_flow import (
     _encode_stop_selection,
     _normalize_single_stop_id,
 )
+
+
+def test_config_flow_registered_for_finland_domain() -> None:
+    assert config_entries.HANDLERS.get(DOMAIN) is config_flow.TransitDeparturesConfigFlow
+    assert DOMAIN == "transit_departures_finland"
 
 
 def test_encode_decode_stop_selection_round_trip() -> None:
