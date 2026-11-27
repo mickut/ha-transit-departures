@@ -5,7 +5,6 @@
 [![GitHub Activity][commits-shield]][commits]
 [![License][license-shield]](LICENSE)
 
-[![hacs][hacsbadge]][hacs]
 ![Project Maintenance][maintenance-shield]
 
 [![Community Forum][forum-shield]][forum]
@@ -25,24 +24,26 @@ Home Assistant custom integration for upcoming departures from the FinTraffic Gr
 
 ## Installation
 
-### HACS
+### Marketplace
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mickut&repository=ha-transit-departures)
+Requires Home Assistant 2026.11.0 or later.
 
-1. Open HACS in Home Assistant.
-2. Go to Integrations.
-3. Open the three-dot menu and choose Custom repositories.
-4. Add `https://github.com/mickut/ha-transit-departures` as a repository with category `Integration`.
-5. Find Transit Departures Finland in HACS and install it.
-6. Restart Home Assistant.
-7. Go to Settings > Devices & services > Add integration and search for Transit Departures Finland,
-   or use the badge below:
+[![Open your Home Assistant instance and open a repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=mickut&repository=ha-transit-departures&category=integration)
+
+1. Open the link above, or go to **Settings > Marketplace** and select **Add from link**.
+2. If prompted, connect GitHub and add `https://github.com/mickut/ha-transit-departures` as an integration.
+3. Open Transit Departures Finland and select **Install**.
+4. Follow the setup prompt, or go to **Settings > Devices & services > Add integration** and search for Transit Departures Finland,
+   or use the badge below.
+
+A first install normally loads without a restart. Follow any restart prompt shown by Home Assistant;
+updates to a loaded integration require a restart.
 
 [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=transit_departures)
 
 ### Manual installation
 
-1. Download this repository.
+1. Download a release or this repository.
 2. Copy the `custom_components/transit_departures` folder into your Home Assistant `config/custom_components` directory.
 3. Restart Home Assistant.
 4. Go to Settings > Devices & services > Add integration and search for Transit Departures Finland.
@@ -128,8 +129,6 @@ Notes:
 
 [commits-shield]: https://img.shields.io/github/commit-activity/y/mickut/ha-transit-departures.svg?style=for-the-badge
 [commits]: https://github.com/mickut/ha-transit-departures/commits/main
-[hacs]: https://github.com/custom-components/hacs
-[hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
 [license-shield]: https://img.shields.io/github/license/mickut/ha-transit-departures.svg?style=for-the-badge

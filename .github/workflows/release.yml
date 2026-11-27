@@ -27,17 +27,22 @@ jobs:
                   python - <<'PY'
                   import json
                   import os
+                  import tomllib
                   from pathlib import Path
 
                   manifest = json.loads(Path('custom_components/transit_departures/manifest.json').read_text(encoding='utf-8'))
+                  with Path('pyproject.toml').open('rb') as project_file:
+                      project_version = tomllib.load(project_file)['project']['version']
                   tag = os.environ['GITHUB_REF_NAME']
                   expected = tag.removeprefix('v')
                   actual = manifest['version']
 
                   if actual != expected:
                       raise SystemExit(f'manifest version {actual!r} does not match tag {tag!r}')
+                  if project_version != actual:
+                      raise SystemExit(f'project version {project_version!r} does not match manifest version {actual!r}')
 
-                  print(f'Version {actual} matches tag {tag}.')
+                  print(f'Manifest and project version {actual} match tag {tag}.')
                   PY
 
             - name: Build release archive

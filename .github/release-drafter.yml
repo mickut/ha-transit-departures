@@ -7,8 +7,8 @@ template: |
 
   ## Installation
 
-  - HACS users can update directly from Home Assistant.
-  - Manual installs should replace `custom_components/transit_departures` with the contents of the attached archive.
+  - Marketplace users can update from Settings > Updates, then restart Home Assistant.
+  - For a manual install, extract the attached archive and replace `custom_components/transit_departures` with the folder of the same name inside it.
 
 categories:
   - title: Features
