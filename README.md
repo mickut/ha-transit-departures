@@ -73,6 +73,11 @@ with **Reconfigure** on the integration entry):
   on the stop's row. Unset stops follow the shared value.
 - `cutoff_minutes`: exclude departures that are in the past or within this many minutes from now
 - `update_interval_minutes`: API polling interval for refreshing departures, default `15`
+- `prefix` (optional): text prepended to each sensor name, default empty
+- `suffix` (optional): text appended to each sensor name, default `Next Departure`
+
+Both `prefix` and `suffix` can be changed or cleared later using **Configure** on the
+integration entry. If both are left empty, each sensor is named after its stop.
 
 After the main entry is created, Home Assistant opens a stop subentry flow for the first stop. Additional stops can be added later from the integration page.
 
