@@ -15,5 +15,5 @@
   "loggers": [
     "custom_components.transit_departures_finland"
   ],
-  "version": "0.4.3"
+  "version": "0.4.4"
 }

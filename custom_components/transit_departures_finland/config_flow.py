@@ -134,11 +134,11 @@ class TransitDeparturesConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_UPDATE_INTERVAL_MINUTES,
                     default=DEFAULT_UPDATE_INTERVAL_MINUTES,
                 ): vol.All(vol.Coerce(int), vol.Range(min=1, max=1440)),
-                vol.Required(
+                vol.Optional(
                     CONF_PREFIX,
                     default=DEFAULT_PREFIX,
                 ): selector.TextSelector(),
-                vol.Required(
+                vol.Optional(
                     CONF_SUFFIX,
                     default=DEFAULT_SUFFIX,
                 ): selector.TextSelector(),
@@ -364,7 +364,13 @@ class TransitDeparturesOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input: Mapping[str, Any] | None = None) -> ConfigFlowResult:
         if user_input is not None:
-            return self.async_create_entry(title="", data=dict(user_input))
+            return self.async_create_entry(
+                title="",
+                data={
+                    CONF_PREFIX: user_input.get(CONF_PREFIX, ""),
+                    CONF_SUFFIX: user_input.get(CONF_SUFFIX, ""),
+                },
+            )
 
         prefix_default = self._config_entry.options.get(
             CONF_PREFIX,
@@ -377,8 +383,14 @@ class TransitDeparturesOptionsFlow(config_entries.OptionsFlow):
 
         schema = vol.Schema(
             {
-                vol.Required(CONF_PREFIX, default=prefix_default): selector.TextSelector(),
-                vol.Required(CONF_SUFFIX, default=suffix_default): selector.TextSelector(),
+                vol.Optional(
+                    CONF_PREFIX,
+                    description={"suggested_value": prefix_default},
+                ): selector.TextSelector(),
+                vol.Optional(
+                    CONF_SUFFIX,
+                    description={"suggested_value": suffix_default},
+                ): selector.TextSelector(),
             }
         )
 

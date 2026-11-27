@@ -269,3 +269,88 @@ async def test_main_flow_reconfigure_updates_shared_numbers(monkeypatch: pytest.
         config_flow.CONF_CUTOFF_MINUTES: 5,
         config_flow.CONF_UPDATE_INTERVAL_MINUTES: 10,
     }
+
+
+@pytest.mark.asyncio
+async def test_user_flow_allows_omitting_prefix_and_suffix(monkeypatch: pytest.MonkeyPatch) -> None:
+    import voluptuous as vol
+
+    flow = config_flow.TransitDeparturesConfigFlow()
+    captured: dict = {}
+
+    def fake_show_form(*, step_id, data_schema, errors):
+        captured["schema"] = data_schema
+        return {"type": "form", "step_id": step_id, "errors": errors}
+
+    monkeypatch.setattr(flow, "async_show_form", fake_show_form)
+    monkeypatch.setattr(
+        flow,
+        "async_create_entry",
+        lambda *, title, data: {"type": "create_entry", "title": title, "data": data},
+    )
+
+    form = await flow.async_step_user(None)
+    assert form["type"] == "form"
+    optional_keys = {
+        key.schema: key
+        for key in captured["schema"].schema
+        if isinstance(key, vol.Optional)
+    }
+    assert config_flow.CONF_PREFIX in optional_keys
+    assert config_flow.CONF_SUFFIX in optional_keys
+
+    result = await flow.async_step_user(
+        {
+            CONF_NUMBER_OF_DEPARTURES: 6,
+            config_flow.CONF_CUTOFF_MINUTES: 0,
+            config_flow.CONF_UPDATE_INTERVAL_MINUTES: 15,
+        }
+    )
+
+    assert result["type"] == "create_entry"
+    assert result["data"][config_flow.CONF_PREFIX] == ""
+    assert result["data"][config_flow.CONF_SUFFIX] == ""
+
+
+@pytest.mark.asyncio
+async def test_options_flow_allows_clearing_prefix_and_suffix(monkeypatch: pytest.MonkeyPatch) -> None:
+    import voluptuous as vol
+
+    entry = SimpleNamespace(
+        data={
+            config_flow.CONF_PREFIX: "Bus",
+            config_flow.CONF_SUFFIX: "Next Departure",
+        },
+        options={},
+    )
+    flow = config_flow.TransitDeparturesOptionsFlow(entry)
+    captured: dict = {}
+
+    def fake_show_form(*, step_id, data_schema, errors):
+        captured["schema"] = data_schema
+        return {"type": "form", "step_id": step_id, "errors": errors}
+
+    monkeypatch.setattr(flow, "async_show_form", fake_show_form)
+    monkeypatch.setattr(
+        flow,
+        "async_create_entry",
+        lambda *, title, data: {"type": "create_entry", "title": title, "data": data},
+    )
+
+    form = await flow.async_step_init(None)
+    assert form["type"] == "form"
+    optional_keys = {
+        key.schema: key
+        for key in captured["schema"].schema
+        if isinstance(key, vol.Optional)
+    }
+    assert optional_keys[config_flow.CONF_PREFIX].description == {"suggested_value": "Bus"}
+    assert optional_keys[config_flow.CONF_SUFFIX].description == {
+        "suggested_value": "Next Departure"
+    }
+
+    result = await flow.async_step_init({})
+    assert result["data"] == {
+        config_flow.CONF_PREFIX: "",
+        config_flow.CONF_SUFFIX: "",
+    }
